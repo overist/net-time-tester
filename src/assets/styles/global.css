@@ -1,0 +1,18 @@
+@font-face {
+  font-family: "DMSans";
+  src: url("../fonts/DMSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+}
+
+:root {
+  /* TODO: 색상 조정 필요 */
+  --text-primary: #2e2cbc;
+  --text-bright: #FFFFFF;
+  --text-common: #212529;
+
+  --btn-primary: #2e2cbc;
+  --btn-secondary: #3C3F52;
+
+  --bg-primary: #edf2ff;
+  --bg-secondary: #dbe4ff;
+}
