@@ -5,7 +5,7 @@
   "confirmPassword must match password": "confirmPassword must match password",
   "Administrator creation is complete.": "Administrator creation is complete.",
   "The account or password is not valid.": "The account or password is not valid.",
-  "Password has been changed successfully.": "Password has been changed successfully.",
+  "Password change is complete.": "Password change is complete.",
   "Administrator already exists.": "Administrator already exists.",
   "An error occurred during administrator creation.": "An error occurred during administrator creation.",
   "An error occurred while changing the password.": "An error occurred while changing the password.",
@@ -28,9 +28,8 @@
   "Administrator successfully deleted.": "Administrator successfully deleted.",
   "User name change is complete.": "User name change is complete.",
   "Permission change completed.": "Permission change completed.",
-  "role must be a valid enum value": "Invalid permission",
+  "level must be a valid enum value": "Invalid permission",
   "oldPassword must be longer than or equal to 8 characters": "oldPassword must be longer than or equal to 8 characters",
   "newPassword must be longer than or equal to 8 characters": "newPassword must be longer than or equal to 8 characters",
-  "confirmNewPassword must match newPassword": "confirmNewPassword must match newPassword",
-  "The new password is the same as the old password.": "The new password is the same as the old password."
+  "confirmNewPassword must match newPassword": "confirmNewPassword must match newPassword"
 }

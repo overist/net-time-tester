@@ -28,7 +28,7 @@ yarn install
 VSCode > Run ad Debug > debug NestJS
 ```
 
-http://localhost:9001/api
+http://localhost:9000/api
 
 # reference
 

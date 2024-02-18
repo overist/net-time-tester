@@ -8,7 +8,7 @@ import ListContainer from 'src/components/core/list-container'
 import Content from 'src/components/admin/history/content'
 
 // ** API
-import { getLoginHistoryList, getLoginHistory } from 'src/apis/admin'
+import { getLoginHistoryAdminList } from 'src/apis/admin'
 
 // ** Redux
 import {
@@ -17,7 +17,6 @@ import {
   setSearchForm,
   setDetailForm,
   setListAPI,
-  setDetailAPI,
   setActionList,
   initData
 } from 'src/store/apps/crud'
@@ -31,16 +30,13 @@ const AdminHistory = () => {
 
   useEffect(() => {
     // NOTE 리스트 조회 API 정의
-    dispatch(setListAPI(getLoginHistoryList))
-
-    // NOTE 상세 API 정의
-    dispatch(setDetailAPI(getLoginHistory))
+    dispatch(setListAPI(getLoginHistoryAdminList))
 
     // NOTE 페이지 헤더 정의
     dispatch(
       setPageHeader({
-        title: '로그인 이력',
-        subTitle: '로그인 이력을 확인할 수 있습니다.'
+        title: '관리자 로그인 이력',
+        subTitle: '관리자 로그인 이력을 확인할 수 있습니다.'
       })
     )
 
@@ -48,52 +44,17 @@ const AdminHistory = () => {
     dispatch(
       setTableHeader([
         '아이디',
-        '사용자아이디',
-        '사용자계정',
-        '사용자명',
+        '관리자아이디',
+        '관리자계정',
+        '관리자명',
         '타입',
         '생성일자',
-        '수정일자',
-        '액션'
+        '수정일자'
       ])
     )
 
     // NOTE 상세 폼 설정
-    dispatch(
-      setDetailForm([
-        {
-          label: '아이디',
-          key: 'id',
-          value: ''
-        },
-        {
-          label: '사용자 아이디',
-          key: 'userId',
-          value: ''
-        },
-        {
-          label: '타입',
-          key: 'type',
-          value: ''
-        },
-        {
-          label: '생성일자',
-          key: 'createdAt',
-          value: ''
-        },
-        {
-          label: '수정일자',
-          key: 'updatedAt',
-          value: ''
-        },
-        ,
-        {
-          label: '삭제일자',
-          key: 'deletedAt',
-          value: ''
-        }
-      ])
-    )
+    dispatch(setDetailForm([]))
 
     // NOTE 검색 폼 설정
     dispatch(

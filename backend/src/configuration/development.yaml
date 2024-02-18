@@ -1,8 +1,8 @@
 http:
-  port: 9001
+  port: 9000
 
-# session store 'database' or 'redis'
-session_store: 'database'
+service:
+  mode: 'development'
 
 db:
   host: 'localhost'
@@ -11,8 +11,15 @@ db:
   password: 'docker'
   database: 'develop'
   session:
-    secretKey: 'b3aa9ad4-c8e9-4715-9c3f-75d91fe86471'
+    secretKey: 'b3aa9ad4-1a3g-4715-9c3f-75d91fe86471'
 
-redis:
-  host: 'localhost'
-  port: 6379
+tempPassword:
+  secretKey: '55c4fd76-acb9-xz1f-94d7-2c7da5c0a949'
+
+server:
+  ip: '192.168.0.1'
+  url: 'localhost:3000'
+
+kakao:
+  clientId: '6ed570155f392c4708c5540c7eb7979e'
+  redirectUri: 'http://localhost:3000/auth/kakao'

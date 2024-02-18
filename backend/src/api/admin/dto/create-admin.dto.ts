@@ -2,10 +2,9 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsArray, IsEmail, IsEnum, Length } from 'class-validator'
 import { Match } from 'src/common/validation/match.decorator'
 
-enum Role {
+enum Level {
   SystemAdmin = 'SA',
-  Admin = 'A',
-  User = 'U'
+  Admin = 'A'
 }
 
 export class CreateAdminDto {
@@ -53,9 +52,9 @@ export class CreateAdminDto {
   profile: number[]
 
   @ApiProperty({
-    description: 'role',
+    description: 'level',
     example: 'SA'
   })
-  @IsEnum(Role)
-  role: string
+  @IsEnum(Level)
+  level: string
 }

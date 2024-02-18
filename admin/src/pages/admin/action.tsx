@@ -8,7 +8,6 @@ import ListContainer from 'src/components/core/list-container'
 import Content from 'src/components/admin/action/content'
 
 // ** API
-import { getActionList } from 'src/apis/action'
 
 // ** Redux
 import {
@@ -17,13 +16,13 @@ import {
   setSearchForm,
   setDetailForm,
   setListAPI,
-  setDetailAPI,
   setActionList,
   initData
 } from 'src/store/apps/crud'
 import { useEffect } from 'react'
 import { AppDispatch } from 'src/store'
 import InfoContainer from 'src/components/core/info-container'
+import { getActionList } from 'src/apis/action'
 
 const AdminHistory = () => {
   // ** Hooks

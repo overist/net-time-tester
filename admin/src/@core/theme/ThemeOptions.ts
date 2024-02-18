@@ -31,42 +31,52 @@ const themeOptions = (settings: Settings): ThemeOptions => {
   const typographyConfig = {
     h1: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     h2: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     h3: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     h4: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     h5: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     h6: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     body1: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     body2: {
       fontSize: '12px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     subtitle1: {
       fontSize: '14px'
+
       // 추가적인 스타일 속성 설정 가능
     },
     subtitle2: {
       fontSize: '12px'
+
       // 추가적인 스타일 속성 설정 가능
     }
   }

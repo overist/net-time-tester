@@ -19,6 +19,7 @@ export const initData = createAsyncThunk(
     const params = getParamsFromForm(searchForm)
     params['page'] = 1
     dispatch(setIsLoad(true))
+    dispatch(setInitSearch(true))
     const { data: res } = await listAPI(params)
     if (res.statusCode === 200) {
       const data = res.data
@@ -40,6 +41,9 @@ export const appCrudSlice = createSlice({
   initialState: {
     // action id
     actionId: 0,
+
+    // init search
+    initSearch: true,
 
     // pagination
     pagination: {
@@ -238,6 +242,9 @@ export const appCrudSlice = createSlice({
     },
     setIsLoad(state, action) {
       state.isLoad = action.payload
+    },
+    setInitSearch(state, action) {
+      state.initSearch = action.payload
     }
   }
 })
@@ -266,7 +273,8 @@ export const {
   setDeleteAPI,
   setUpdateAPI,
   setLoadAPI,
-  setIsLoad
+  setIsLoad,
+  setInitSearch
 } = appCrudSlice.actions
 
 export default appCrudSlice.reducer

@@ -2,7 +2,6 @@ import moment from 'moment'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
-import Chip from '@mui/material/Chip'
 
 import DATE from 'src/common/constants/date'
 import { useSelector } from 'react-redux'

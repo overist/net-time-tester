@@ -17,16 +17,13 @@ interface Redux {
 }
 
 // ** Fetch Invoices
-export const fetchData = createAsyncThunk(
-  'appInvoice/fetchData',
-  async (params: DataParams) => {
-    const response = await axios.get('/apps/invoice/invoices', {
-      params
-    })
+export const fetchData = createAsyncThunk('appInvoice/fetchData', async (params: DataParams) => {
+  const response = await axios.get('/apps/invoice/invoices', {
+    params
+  })
 
-    return response.data
-  }
-)
+  return response.data
+})
 
 export const deleteInvoice = createAsyncThunk(
   'appInvoice/deleteData',
@@ -49,7 +46,7 @@ export const appInvoiceSlice = createSlice({
     allData: []
   },
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addCase(fetchData.fulfilled, (state, action) => {
       state.data = action.payload.invoices
       state.params = action.payload.params

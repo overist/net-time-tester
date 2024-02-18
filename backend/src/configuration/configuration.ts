@@ -24,20 +24,20 @@ export default () => {
       database: data.db.database,
       entities: [join(__dirname, '..', 'entities', '*.entity{.ts,.js}')],
       synchronize: false,
-      charset: 'utf8mb4_unicode_ci',
       extra: {
         connectionLimit: 10
       },
-      timezone: '+09:00', // response 반환 시 UTC로 반환됨
-      logging: ['query', 'error', 'schema', 'warn', 'info', 'log']
-      // logging: ['error', 'schema', 'warn', 'info', 'log']
+      timezone: '+09:00',
+      // logging: ['query', 'error', 'schema', 'warn', 'info', 'log']
+      logging: ['error', 'schema', 'warn', 'info', 'log']
     },
-    redis: {
-      host: data.db.host,
-      port: Number(data.redis.port)
-    },
-    sessionStoreType: data.session_store,
-    sessionSecretKey: data.db.session.secretKey
+    sessionSecretKey: data.db.session.secretKey,
+    tempPasswordSecretKey: data.tempPassword.secretKey,
+    serviceMode: data.service.mode,
+    serverIp: data.server.ip,
+    serverUrl: data.server.url,
+    kakaoClientId: data.kakao.clientId,
+    kakaoRedirectUri: data.kakao.redirectUri
   }
   console.log('configuration -> ', configuration)
   return configuration

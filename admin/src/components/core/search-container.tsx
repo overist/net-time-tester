@@ -26,6 +26,7 @@ import toast from 'react-hot-toast'
 import { RootState } from 'src/store'
 import {
   initSearchForm,
+  setInitSearch,
   setIsLoad,
   setPagination,
   updateSearchForm
@@ -64,6 +65,7 @@ const SearchContainer = () => {
     const params = getParamsFromForm(searchForm)
     params['page'] = 1
     dispatch(setIsLoad(true))
+    dispatch(setInitSearch(true))
     const { data: res } = await listAPI(params)
     if (res.statusCode === 200) {
       const data = res.data

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "export": "next export",
     "lint": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
@@ -29,7 +29,6 @@
     "@iconify/react": "4.0.0",
     "@mui/lab": "5.0.0-alpha.100",
     "@mui/material": "5.10.6",
-    "@mui/utils": "^5.14.14",
     "@mui/x-data-grid": "5.17.3",
     "@popperjs/core": "2.11.2",
     "@reduxjs/toolkit": "1.8.3",
@@ -43,6 +42,7 @@
     "cleave.js": "1.6.0",
     "clipboard-copy": "4.0.1",
     "clsx": "1.2.1",
+    "dagre": "^0.8.5",
     "date-fns": "2.29.3",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
@@ -51,8 +51,7 @@
     "i18next": "21.9.2",
     "i18next-browser-languagedetector": "6.1.2",
     "i18next-http-backend": "1.4.4",
-    "immer": "^9.0.19",
-    "immutability-helper": "^3.1.1",
+    "immer": "^9.0.17",
     "jsonwebtoken": "8.5.1",
     "keen-slider": "6.8.2",
     "moment": "^2.29.4",
@@ -66,8 +65,6 @@
     "react-countup": "^6.4.0",
     "react-credit-cards": "0.8.3",
     "react-datepicker": "4.5.0",
-    "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.1.0",
     "react-draft-wysiwyg": "1.14.7",
     "react-dropzone": "14.2.2",
@@ -75,16 +72,14 @@
     "react-hot-toast": "2.4.0",
     "react-i18next": "11.18.6",
     "react-lottie": "^1.2.3",
-    "react-motion": "^0.5.2",
     "react-perfect-scrollbar": "1.5.8",
     "react-popper": "2.2.5",
     "react-redux": "8.0.1",
-    "react-sortablejs": "^6.1.4",
-    "react-syntax-highlighter": "^15.5.0",
+    "reactflow": "^11.5.6",
     "recharts": "2.1.15",
-    "sortablejs": "^1.15.0",
     "stylis": "4.1.2",
     "stylis-plugin-rtl": "2.1.1",
+    "xlsx": "^0.18.5",
     "yup": "0.32.11"
   },
   "devDependencies": {
@@ -107,7 +102,6 @@
     "@types/react-redux": "7.1.24",
     "@typescript-eslint/eslint-plugin": "5.38.0",
     "@typescript-eslint/parser": "5.38.0",
-    "@yarnpkg/sdks": "^3.0.0",
     "eslint": "8.23.1",
     "eslint-config-next": "12.3.1",
     "eslint-config-prettier": "8.3.0",
@@ -115,20 +109,23 @@
     "eslint-import-resolver-typescript": "3.5.1",
     "eslint-plugin-import": "2.25.4",
     "next-transpile-modules": "9.0.0",
-    "node-gyp": "^9.4.0",
-    "prettier": "^2.8.4",
-    "typescript": "4.8.3",
-    "webpack": "^5.89.0"
+    "prettier": "2.6.2",
+    "typescript": "4.8.3"
   },
   "resolutions": {
     "minipass": "3.3.5",
     "@mui/x-data-grid/@mui/system": "5.4.1",
-    "react-credit-cards/prop-types": "15.7.2"
+    "react-credit-cards/prop-types": "15.7.2",
+    "react-hot-toast/goober/csstype": "3.0.10",
+    "recharts/react-smooth/prop-types": "15.6.0",
+    "react-draft-wysiwyg/html-to-draftjs/immutable": "3.x.x || 4.x.x",
+    "react-draft-wysiwyg/draftjs-utils/immutable": "3.x.x || 4.x.x",
+    "@emotion/react/@emotion/babel-plugin/@babel/core": "7.0.0",
+    "@emotion/react/@emotion/babel-plugin/@babel/plugin-syntax-jsx/@babel/core": "7.0.0"
   },
   "overrides": {
     "react-credit-cards": {
       "react": "$react"
     }
-  },
-  "packageManager": "yarn@4.0.0"
+  }
 }

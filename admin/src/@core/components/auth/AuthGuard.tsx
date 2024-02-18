@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 
 // ** Hooks Import
 import { useAuth } from 'src/hooks/useAuth'
-import { getAdminBySession } from 'src/apis/admin'
+import { getAuthInfo } from 'src/apis/auth'
 
 interface AuthGuardProps {
   children: ReactNode
@@ -22,19 +22,19 @@ const AuthGuard = (props: AuthGuardProps) => {
   const initData = async () => {
     // 세션 기반으로 로그인 정보 조회
     try {
-      const { data: res } = await getAdminBySession()
+      const { data: res } = await getAuthInfo()
       if (res.statusCode === 200) {
-        setUser({ ...res.data })
+        setUser({ role: 'admin', ...res.data })
       }
     } catch (err) {
       // 세션 기반으로 로그인 정보가 없을 경우 로그인 페이지 전환
       if (router.asPath !== '/') {
         router.replace({
-          pathname: '/login',
+          pathname: '/auth/login',
           query: { returnUrl: router.asPath }
         })
       } else {
-        router.replace('/login')
+        router.replace('/auth/login')
       }
     }
   }

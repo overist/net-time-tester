@@ -4,7 +4,6 @@ import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Chip from '@mui/material/Chip'
 
-import ActionContainer from 'src/components/core/action-container'
 import DATE from 'src/common/constants/date'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/store'
@@ -19,33 +18,26 @@ const Content = () => {
       <TableBody>
         {pagination.data.map((row: any, idx: number) => (
           <TableRow key={idx}>
-            <TableCell>{row.id}</TableCell>
-            <TableCell>{row.userId}</TableCell>
-            <TableCell>{row.account}</TableCell>
-            <TableCell>{row.username}</TableCell>
-            <TableCell>
+            <TableCell className="no-wrap">{row.id}</TableCell>
+            <TableCell className="no-wrap">{row.userId}</TableCell>
+            <TableCell className="no-wrap">{row.account}</TableCell>
+            <TableCell className="no-wrap">{row.username}</TableCell>
+            <TableCell className="no-wrap">
               {row.type === 1 ? (
                 <Chip label="로그인" color="primary" variant="outlined" />
               ) : (
                 <Chip label="로그아웃" color="error" variant="outlined" />
               )}
             </TableCell>
-            <TableCell>
+            <TableCell className="no-wrap">
               {row?.createdAt
                 ? moment(row?.createdAt).format(DATE.DATETIME)
                 : '-'}
             </TableCell>
-            <TableCell>
+            <TableCell className="no-wrap">
               {row?.updatedAt
                 ? moment(row?.updatedAt).format(DATE.DATETIME)
                 : '-'}
-            </TableCell>
-            <TableCell>
-              <ActionContainer
-                id={row.id}
-                detailAction={true}
-                deleteAction={false}
-              />
             </TableCell>
           </TableRow>
         ))}

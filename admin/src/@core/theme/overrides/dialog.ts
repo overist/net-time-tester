@@ -14,7 +14,7 @@ const Dialog = (theme: Theme, skin: Skin) => {
             border: `1px solid ${theme.palette.divider}`
           }),
           '&:not(.MuiDialog-paperFullScreen)': {
-            // borderRadius: 8,
+            borderRadius: 0,
             '@media (max-width:599px)': {
               margin: theme.spacing(4),
               width: `calc(100% - ${theme.spacing(8)})`,

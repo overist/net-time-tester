@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module'
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended'
@@ -20,11 +20,11 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off'
-  },
-  'linebreak-style': [
-    'error',
-    require('os').EOL === '\r\n' ? 'windows' : 'unix'
-  ],
-  'prettier/prettier': ['error', { endOfLine: 'auto' }]
+    '@typescript-eslint/no-explicit-any': 'off',
+    'linebreak-style': [
+      'error',
+      require('os').EOL === '\r\n' ? 'windows' : 'unix'
+    ],
+    'prettier/prettier': ['error', { endOfLine: 'auto' }]
+  }
 }

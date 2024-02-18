@@ -7,6 +7,11 @@ body {
   height: 100%;
 }
 
+a {
+  text-decoration: none; /* 밑줄 제거 */
+  color: blue; /* 링크 색상 변경 */
+}
+
 @font-face {
   font-family: 'Nanum Gothic';
   src: url('../public/font/NanumSquareNeo-cBd.ttf') format('truetype');
@@ -28,4 +33,13 @@ code {
 
 code[class*='language-'] {
   padding: 0;
+}
+
+.react-flow__edge-path {
+  stroke: #ffffff !important;
+  stroke-width: 5px !important;
+}
+
+.no-wrap {
+  white-space: nowrap !important;
 }

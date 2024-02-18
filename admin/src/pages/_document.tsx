@@ -24,9 +24,9 @@ class CustomDocument extends Document {
           <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="/images/logo.png"
+            href="/images/favicon.png"
           />
-          <link rel="shortcut icon" href="/images/logo.png" />
+          <link rel="shortcut icon" href="/images/favicon.png" />
         </Head>
         <body>
           <Main />

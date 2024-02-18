@@ -137,11 +137,8 @@ const VerticalLayout = (props: LayoutProps) => {
           />
 
           {/* Content */}
-          <ContentWrapper
+          {/* <ContentWrapper
             className="layout-page-content"
-            style={{
-              paddingTop: '5px'
-            }}
             sx={{
               ...(contentHeightFixed && {
                 overflow: 'hidden',
@@ -155,7 +152,8 @@ const VerticalLayout = (props: LayoutProps) => {
             }}
           >
             {children}
-          </ContentWrapper>
+          </ContentWrapper> */}
+          <div style={{ padding: '20px' }}>{children}</div>
 
           {/* Footer Component */}
           <Footer

@@ -1,6 +1,4 @@
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
-import { applyDecorators, UseInterceptors } from '@nestjs/common'
-import { ApiBody, ApiConsumes } from '@nestjs/swagger'
+import { ApiBody } from '@nestjs/swagger'
 
 /*
     <reference>
@@ -14,28 +12,24 @@ import { ApiBody, ApiConsumes } from '@nestjs/swagger'
     @UploadedFiles() files: any
 */
 
-export const ApiFiles = (fileName: string = 'files'): MethodDecorator => (
-  target: any,
-  propertyKey: string,
-  descriptor: PropertyDescriptor,
-) => {
-  
-
-  ApiBody({
+export const ApiFiles =
+  (fileName = 'files'): MethodDecorator =>
+  (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    ApiBody({
       type: 'multipart/form-data',
       required: true,
       schema: {
-          type: 'object',
-          properties: {
-            note: { type: 'string' },
-              [fileName]: {
-                  type: 'array',
-                  items: {
-                      type: 'string',
-                      format: 'binary',
-                  },
-              },
-          },
-      },
-  })(target, propertyKey, descriptor);
-};
+        type: 'object',
+        properties: {
+          note: { type: 'string' },
+          [fileName]: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary'
+            }
+          }
+        }
+      }
+    })(target, propertyKey, descriptor)
+  }

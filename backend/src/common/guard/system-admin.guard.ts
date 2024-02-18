@@ -12,7 +12,7 @@ export class SystemAdminGuard implements CanActivate {
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest()
-    if (request.session.userId && request.session.role === 'SA') {
+    if (request.session.userId && request.session.role === 'SYSTEM_ADMIN') {
       return true
     } else {
       throw new UnauthorizedException()

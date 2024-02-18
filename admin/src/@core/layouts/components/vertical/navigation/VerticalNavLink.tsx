@@ -228,11 +228,7 @@ const VerticalNavLink = ({
                     })
               }}
             >
-              <UserIcon
-                icon={icon as string}
-                // fontSize={parent ? '0.4375rem' : '1.375rem'}
-                fontSize={'12px'}
-              />
+              <UserIcon icon={icon as string} fontSize={'14px'} />
             </ListItemIcon>
 
             <MenuItemTextMetaWrapper
@@ -243,7 +239,6 @@ const VerticalNavLink = ({
             >
               <Typography
                 sx={{
-                  fontSize: '12px',
                   color:
                     mode === 'semi-dark'
                       ? `rgba(${theme.palette.customColors.dark}, 0.6)`
@@ -253,7 +248,8 @@ const VerticalNavLink = ({
                   (!themeConfig.menuTextTruncate &&
                     navCollapsed &&
                     !navHover)) && {
-                  noWrap: true
+                  noWrap: true,
+                  fontSize: '12px'
                 })}
               >
                 <Translations text={item.title} />

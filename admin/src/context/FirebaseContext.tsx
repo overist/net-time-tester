@@ -15,9 +15,7 @@ const authUserContext: any = createContext({
 export const FirebaseAuthProvider = ({ children }: { children: ReactNode }) => {
   const auth = useFirebaseAuth()
 
-  return (
-    <authUserContext.Provider value={auth}>{children}</authUserContext.Provider>
-  )
+  return <authUserContext.Provider value={auth}>{children}</authUserContext.Provider>
 }
 
 // custom hook to use the authUserContext and access authUser and loading

@@ -1,8 +1,6 @@
 // ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
-import MuiSwipeableDrawer, {
-  SwipeableDrawerProps
-} from '@mui/material/SwipeableDrawer'
+import MuiSwipeableDrawer, { SwipeableDrawerProps } from '@mui/material/SwipeableDrawer'
 
 // ** Type Import
 import { LayoutProps } from 'src/@core/layouts/types'
@@ -110,7 +108,7 @@ const Drawer = (props: Props) => {
 
   return (
     <SwipeableDrawer
-      className="layout-vertical-nav"
+      className='layout-vertical-nav'
       variant={hidden ? 'temporary' : 'permanent'}
       {...(hidden ? { ...MobileDrawerProps } : { ...DesktopDrawerProps })}
       PaperProps={{
@@ -118,22 +116,14 @@ const Drawer = (props: Props) => {
           ...drawerBgColor(),
           ...(!hidden && skin !== 'bordered' && { boxShadow: 6 }),
           width: navCollapsed && !navHover ? collapsedNavWidth : navWidth,
-          borderRight:
-            navigationBorderWidth === 0
-              ? 0
-              : `${navigationBorderWidth}px solid ${theme.palette.divider}`,
+          borderRight: navigationBorderWidth === 0 ? 0 : `${navigationBorderWidth}px solid ${theme.palette.divider}`,
           ...userNavMenuPaperStyle
         },
         ...navMenuProps?.PaperProps
       }}
       sx={{
         width: navCollapsed ? collapsedNavWidth : navWidth,
-        ...(navCollapsed && !navHover
-          ? {}
-          : {
-              overflow: 'visible',
-              '& .MuiDrawer-paper': { overflow: 'visible' }
-            }),
+        ...(navCollapsed && !navHover ? {} : { overflow: 'visible', '& .MuiDrawer-paper': { overflow: 'visible' } }),
         ...userNavMenuStyle
       }}
       {...userNavMenuProps}

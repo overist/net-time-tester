@@ -25,6 +25,7 @@ const EditConfirmModal = ({
   const actionForm = crud.actionForm
   const listAPI = crud.listAPI
   const updateAPI = crud.updateAPI
+  const pagination = crud.pagination
 
   // 수정 버튼 클릭 시
   const handleClickEdit = async () => {
@@ -51,13 +52,13 @@ const EditConfirmModal = ({
 
   const reloadData = async () => {
     const params = getParamsFromForm(searchForm)
-    params['page'] = 1
+    params['page'] = pagination.activePage
     const { data: res } = await listAPI(params)
     if (res.statusCode === 200) {
       const data = res.data
       dispatch(
         setPagination({
-          activePage: 1,
+          activePage: pagination.activePage,
           count: getPaginationCount(data.count, params['limit']),
           data: data.data
         })

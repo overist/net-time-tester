@@ -24,7 +24,7 @@ import { useAuth } from 'src/hooks/useAuth'
 import { Settings } from 'src/@core/context/settingsContext'
 
 // ** API
-import { logout as logoutAPI } from 'src/apis/admin'
+import { logout as logoutAPI } from 'src/apis/auth'
 
 interface Props {
   settings: Settings
@@ -40,6 +40,9 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 }))
 
 const UserDropdown = (props: Props) => {
+  // ** Auth
+  const auth = useAuth()
+
   // ** Props
   const { settings } = props
 
@@ -48,17 +51,15 @@ const UserDropdown = (props: Props) => {
 
   // ** Hooks
   const router = useRouter()
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
 
   // ** Vars
   const { direction } = settings
 
-  // 드롭다운 열기
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
   }
 
-  // 드롭다운 닫기
   const handleDropdownClose = (url?: string) => {
     if (url) {
       router.push(url)
@@ -81,7 +82,6 @@ const UserDropdown = (props: Props) => {
     }
   }
 
-  // 로그아웃
   const handleLogout = async () => {
     try {
       const { data: res } = await logoutAPI()
@@ -96,7 +96,6 @@ const UserDropdown = (props: Props) => {
 
   return (
     <Fragment>
-      {/* 프로필 아이콘 */}
       <Badge
         overlap="circular"
         onClick={handleDropdownOpen}
@@ -108,14 +107,12 @@ const UserDropdown = (props: Props) => {
         }}
       >
         <Avatar
-          alt={user.username}
-          src={user.url ? user.url : '/images/avatars/account.png'}
+          alt={''}
+          src={'/images/avatars/account.png'}
           onClick={handleDropdownOpen}
-          sx={{ width: 30, height: 30 }}
+          sx={{ width: 40, height: 40 }}
         />
       </Badge>
-
-      {/* 드롭다운 */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -141,8 +138,8 @@ const UserDropdown = (props: Props) => {
               }}
             >
               <Avatar
-                alt={user.username}
-                src={user.url ? user.url : '/images/avatars/account.png'}
+                alt="관리자"
+                src={'/images/avatars/account.png'}
                 sx={{ width: '2.5rem', height: '2.5rem' }}
               />
             </Badge>
@@ -154,9 +151,13 @@ const UserDropdown = (props: Props) => {
                 flexDirection: 'column'
               }}
             >
-              <Typography sx={{ fontWeight: 500 }}>{user.username}</Typography>
+              <Typography sx={{ fontWeight: 500 }}>
+                {auth.user.username}
+              </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {user.role === 'SA' ? '시스템관리자' : '관리자'}
+                {auth.user.role === 'SYSTEM_ADMIN' && '시스템관리자'}
+                {auth.user.role === 'ADMIN' && '관리자'}
+                {auth.user.role === 'USR' && '사용자'}
               </Typography>
             </Box>
           </Box>

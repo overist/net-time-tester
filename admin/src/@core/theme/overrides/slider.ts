@@ -7,7 +7,7 @@ const Slider = (theme: Theme) => {
     MuiSlider: {
       styleOverrides: {
         root: {
-          // borderRadius: 8,
+          borderRadius: 0,
           '&:not(.MuiSlider-vertical)': {
             height: 6
           },

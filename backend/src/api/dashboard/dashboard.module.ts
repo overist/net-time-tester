@@ -1,10 +1,5 @@
-// ** Module
 import { Module } from '@nestjs/common'
-
-// ** Controller
 import { DashboardController } from './dashboard.controller'
-
-// ** Service
 import { DashboardService } from './dashboard.service'
 
 @Module({

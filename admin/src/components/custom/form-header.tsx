@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux'
 import { getAppInfo } from 'src/apis/global'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
 import { AppDispatch, RootState } from 'src/store'
 import { setAppInfo } from 'src/store/apps/app'
 

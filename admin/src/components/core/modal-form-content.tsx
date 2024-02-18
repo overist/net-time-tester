@@ -1,5 +1,5 @@
 // ** Module
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** Mui
 import Grid from '@mui/material/Grid'
@@ -22,7 +22,13 @@ import { RootState } from 'src/store'
 import React from 'react'
 import ToastEditor from 'src/@core/components/tui-editor'
 import '@toast-ui/editor/dist/toastui-editor.css'
-import { Chip, Divider } from '@mui/material'
+import { Box, Button, Chip, Divider } from '@mui/material'
+
+// ** Third Party Imports
+import DatePicker from 'react-datepicker'
+import { format, parseISO } from 'date-fns'
+import { ko } from 'date-fns/locale'
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 
 const ModalFormContent = ({ formContent, handleChangeForm }) => {
   const dispatch = useDispatch()
@@ -57,9 +63,17 @@ const ModalFormContent = ({ formContent, handleChangeForm }) => {
     <>
       <DialogContentText id="alert-dialog-description">
         {formContent.map((item, idx) => {
+          const blackMagic = item.type === 'datetime' ? '350px' : ''
+
           return (
             <>
-              <Stack key={idx} sx={{ mb: 3 }}>
+              <Stack
+                key={idx}
+                sx={{
+                  mb: 3,
+                  height: blackMagic
+                }}
+              >
                 <div>
                   {item.type === 'text' ? (
                     <>

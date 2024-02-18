@@ -1,9 +1,7 @@
 export const getPaginationCount = (count: number, limit: number) => {
-  if (limit < 1) {
-    return 1
-  } else {
-    return Math.ceil(count / limit)
-  }
+  const res = Math.ceil(count / limit)
+
+  return res
 }
 
 export const getParamsFromForm = (form) => {
@@ -26,4 +24,18 @@ export const formatBytes = (bytes, decimals = 2) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+}
+
+export const numberWithCommas = (x: number) => {
+  try {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  } catch (err) {
+    return '에러'
+  }
+}
+
+export const comma = (x) => {
+  if (!x) return 0
+
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }

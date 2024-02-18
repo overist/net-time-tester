@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import Fade, { FadeProps } from '@mui/material/Fade'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+
 // import { Viewer } from '@toast-ui/react-editor'
 
 // ** Icon Imports
@@ -28,7 +29,7 @@ const Transition = forwardRef(function Transition(
   return <Fade ref={ref} {...props} />
 })
 
-const ModalEditorViewerContainer = ({ title, content, nullContent = '' }) => {
+const ModalEditorViewerContainer = ({ title, content }) => {
   // ** States
   const [show, setShow] = useState<boolean>(false)
 
@@ -63,11 +64,7 @@ const ModalEditorViewerContainer = ({ title, content, nullContent = '' }) => {
               {title}
             </Typography>
           </Box>
-          <Viewer
-            initialValue={
-              content ? content : nullContent ? nullContent : '내용이 없습니다.'
-            }
-          />
+          <Viewer initialValue={content ? content : '자기소개가 없습니다.'} />
         </DialogContent>
         <DialogActions
           sx={{ pb: { xs: 8, sm: 12.5 }, justifyContent: 'center' }}

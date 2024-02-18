@@ -1,42 +1,30 @@
-// ** Module
+import { LoginHistoryAdmin } from './../../entities/login-history-admin.entity'
+import { User } from './../../entities/user.entity'
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
-import { DataSource, IsNull } from 'typeorm'
-import moment from 'moment'
-
-// ** Dto
+import DATE from 'src/common/constants/date'
+import { createPassword } from 'src/common/util/auth'
+import { Admin } from 'src/entities/admin.entity'
+import { DataSource, In, IsNull } from 'typeorm'
 import { CreateSystemAdminDto } from './dto/create-system-admin.dto'
+import moment from 'moment'
 import { GetAdminListDto } from './dto/get-admin-list.dto'
-import { GetAdminDto } from './dto/get-admin.dto'
+import { GetAdminDetailDto } from './dto/get-admin-detail.dto'
 import { CreateAdminDto } from './dto/create-admin.dto'
 import { DeleteAdminDto } from './dto/delete-admin.dto'
-import { UpdateAdminUsernameDto } from './dto/update-admin-username.dto'
-import { UpdateAdminRoleDto } from './dto/update-admin-role.dto'
-import { UpdateAdminIntroDto } from './dto/update-admin-intro.dto'
-import { GetLoginHistoryListDto } from './dto/get-login-history-list.dto'
-import { GetLoginHistoryDto } from './dto/get-login-history.dto'
 import { UpdateAdminPasswordDto } from './dto/update-admin-password.dto'
-import { LoginDto } from './dto/login.dto'
-import { LogoutDto } from './dto/logout.dto'
-import { UpdatePasswordDto } from './dto/update-password.dto'
-import { UpdateAdminProfileDto } from './dto/update-admin-profile.dto'
-
-// ** Entity
-import { Admin } from 'src/entities/admin.entity'
+import { UpdateAdminUsernameDto } from './dto/update-admin-username.dto'
+import { UpdateAdminLevelDto } from './dto/update-admin-level.dto'
+import { GetLoginHistoryListDto } from './dto/get-login-history-list.dto'
 import { File } from 'src/entities/file.entity'
-import { LoginHistory } from 'src/entities/login-history.entity'
-
-// ** Util
-import { createPassword, isMatch } from 'src/common/util/auth'
-
-// ** Service
+import { UpdateAdminIntroDto } from './dto/update-admin-intro.dto'
 import { GlobalService } from '../global/global.service'
-
-// ** Constant
-import DATE from 'src/common/constants/date'
-
-// ** Interface
-import { CommonResult } from 'src/common/interface'
-import { GetAdminBySessionDto } from './dto/get-admin-by-session.dto'
+import { GetUserListDto } from './dto/get-user-list.dto'
+import { v4 as uuidv4 } from 'uuid'
+import { GetUserDetailDto } from './dto/get-user-detail.dto'
+import { UpdateUserDetailDto } from './dto/update-user-detail.dto'
+import BigNumber from 'bignumber.js'
+import { DeleteUserDto } from './dto/delete-user.dto'
+import { UpdateUserIsBanDto } from './dto/update-user-is-ban.dto'
 
 @Injectable()
 export class AdminService {
@@ -46,884 +34,697 @@ export class AdminService {
     private globalService: GlobalService
   ) {}
 
-  // ANCHOR login
-  async login(dto: LoginDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                account: dto.account,
-                deletedAt: IsNull()
-              }
-            })
-
-          // 유효성: 계정이 틀린 경우
-          if (!admin) {
-            throw new HttpException(
-              'The account or password is not valid.',
-              HttpStatus.BAD_REQUEST
-            )
-          }
-
-          if (await isMatch(dto.password, admin.password)) {
-            // 로그인 이력 기록
-            const loginHistory = new LoginHistory()
-            loginHistory.userId = admin.id
-            loginHistory.type = 1
-            await transactionalEntityManager
-              .getRepository(LoginHistory)
-              .save(loginHistory)
-
-            return {
-              data: admin,
-              message: 'Login Successful'
-            }
-          } else {
-            // 비밀번호가 틀린 경우
-            throw new HttpException(
-              'The account or password is not valid.',
-              HttpStatus.BAD_REQUEST
-            )
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
-      }
-    )
-  }
-
-  // ANCHOR logout
-  async logout(dto: LogoutDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          // 로그아웃 이력 기록
-          const loginHistory = new LoginHistory()
-          loginHistory.userId = dto.userId
-          loginHistory.type = 0
-
-          await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .save(loginHistory)
-
-          return {
-            data: null,
-            message: ''
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
-      }
-    )
-  }
-
-  // ANCHOR update password
-  async updatePassword(dto: UpdatePasswordDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const user = await this.datasource.getRepository(Admin).findOne({
-            where: {
-              id: dto.userId,
-              deletedAt: IsNull()
-            }
-          })
-
-          if (await isMatch(dto.newPassword, user.password)) {
-            // 새 비밀번호가 기존 비밀번호와 같은 경우
-            throw new HttpException(
-              '새로운 비밀번호가 기존 비밀번호와 동일합니다.',
-              HttpStatus.BAD_REQUEST
-            )
-          }
-
-          // 비밀번호 변경
-          user.password = await createPassword(dto.newPassword)
-          user.updatedAt = moment().format(DATE.DATETIME)
-
-          await transactionalEntityManager.getRepository(Admin).save(user)
-
-          return {
-            data: null,
-            message: '비밀번호 변경이 완료되었습니다.'
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
-      }
-    )
-  }
-
   // ANCHOR check system admin
-  async checkSystemAdmin(): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const adminList = await transactionalEntityManager
-            .getRepository(Admin)
-            .find({
-              where: {
-                role: 'SA',
-                deletedAt: IsNull()
-              }
-            })
-
-          return {
-            message: '',
-            data: adminList.length === 0
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  async checkSystemAdmin(): Promise<boolean> {
+    const adminList = await this.datasource.getRepository(Admin).find({
+      where: {
+        isSystemAdmin: 1,
+        deletedAt: IsNull()
       }
-    )
+    })
+    if (adminList.length === 0) {
+      return true
+    } else {
+      return false
+    }
   }
 
   // ANCHOR create system admin
-  async createSystemAdmin(dto: CreateSystemAdminDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const { data } = await this.checkSystemAdmin()
-          if (!data) {
-            throw new HttpException(
-              'Administrator already exists.',
-              HttpStatus.BAD_REQUEST
-            )
-          }
+  async createSystemAdmin(dto: CreateSystemAdminDto) {
+    const admin = new Admin()
+    admin.account = dto.account
+    admin.password = await createPassword(dto.password)
+    admin.username = dto.username
+    admin.isSystemAdmin = 1
+    admin.isAdmin = 1
+    await this.datasource.getRepository(Admin).save(admin)
+  }
 
-          const admin = new Admin()
-          admin.account = dto.account
-          admin.password = await createPassword(dto.password)
-          admin.username = dto.username
-          admin.role = 'SA'
-
-          await transactionalEntityManager.getRepository(Admin).save(admin)
-
-          return {
-            message: 'Administrator creation is complete.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  // ANCHOR get admin by user id
+  async getAdminByUserId(userId: number) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: userId,
+        deletedAt: IsNull()
       }
-    )
+    })
+
+    const profile = await this.datasource.getRepository(File).find({
+      where: {
+        tableName: '_admin',
+        tablePk: userId
+      }
+    })
+
+    if (profile.length !== 0) {
+      profile[0]['url'] =
+        (await this.globalService.getGlobal('imageDomain')) +
+        '/' +
+        profile[0].encName
+    }
+    admin['profile'] = profile[0]
+
+    return admin
+  }
+
+  // ANCHOR get admin by account
+  async getAdminByAccount(account: string) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        account,
+        deletedAt: IsNull()
+      }
+    })
+
+    return admin
   }
 
   // ANCHOR get admin list
-  async getAdminList(dto: GetAdminListDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const limit = dto.limit === 0 ? 10 : dto.limit
-          const offset = (dto.page - 1) * limit
+  async getAdminList(dto: GetAdminListDto) {
+    const limit = dto.limit === 0 ? 10 : dto.limit
+    const offset = (dto.page - 1) * limit
 
-          // count
-          const count = await transactionalEntityManager
-            .getRepository(Admin)
-            .createQueryBuilder('a')
-            .select(['count(1) as count'])
-            .leftJoin(
-              (qb) =>
-                qb
-                  .from(File, 'file')
-                  .select('file.table_pk')
-                  .where('file.table_name = :table_name', {
-                    table_name: '_admin'
-                  }),
-              'f',
-              'a.id = f.table_pk'
-            )
-            .where('1=1')
-            .andWhere('a.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere(dto.role === '' ? '1=1' : 'role = :role', {
-              role: dto.role
-            })
-            .andWhere(
-              dto.createdStartAt === ''
-                ? '1=1'
-                : 'DATE(a.created_at) >= :createdStartAt',
-              {
-                createdStartAt: dto.createdStartAt
-              }
-            )
-            .andWhere(
-              dto.createdEndAt === ''
-                ? '1=1'
-                : 'DATE(a.created_at) <= :createdEndAt',
-              {
-                createdEndAt: dto.createdEndAt
-              }
-            )
-            .getRawOne()
+    // count
+    const count = await this.datasource
+      .getRepository(Admin)
+      .createQueryBuilder('a')
+      .select(['count(1) as count'])
+      .leftJoin(
+        (qb) =>
+          qb
+            .from(File, 'file')
+            .select('file.table_pk')
+            .where('file.table_name = :table_name', { table_name: '_admin' }),
+        'f',
+        'a.id = f.table_pk'
+      )
+      .where('1=1')
+      .andWhere('a.deleted_at is null')
+      .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
+        account: `%${dto.account}%`
+      })
+      .andWhere(
+        dto.level === 'SA' ? 'is_system_admin = 1 and is_admin = 1' : '1=1'
+      )
+      .andWhere(
+        dto.level === 'A' ? 'is_system_admin = 0 and is_admin = 1' : '1=1'
+      )
+      .andWhere(
+        dto.createdStartAt === ''
+          ? '1=1'
+          : 'DATE(a.created_at) >= :createdStartAt',
+        {
+          createdStartAt: dto.createdStartAt
+        }
+      )
+      .andWhere(
+        dto.createdEndAt === '' ? '1=1' : 'DATE(a.created_at) <= :createdEndAt',
+        {
+          createdEndAt: dto.createdEndAt
+        }
+      )
+      .getRawOne()
 
-          // count
-          const totalCount = await transactionalEntityManager
-            .getRepository(Admin)
-            .createQueryBuilder('a')
-            .select(['count(1) as count'])
-            .leftJoin(
-              (qb) =>
-                qb
-                  .from(File, 'file')
-                  .select('file.table_pk')
-                  .where('file.table_name = :table_name', {
-                    table_name: '_admin'
-                  }),
-              'f',
-              'a.id = f.table_pk'
-            )
-            .where('1=1')
-            .andWhere('a.deleted_at is null')
-            .getRawOne()
+    // count
+    const totalCount = await this.datasource
+      .getRepository(Admin)
+      .createQueryBuilder('a')
+      .select(['count(1) as count'])
+      .leftJoin(
+        (qb) =>
+          qb
+            .from(File, 'file')
+            .select('file.table_pk')
+            .where('file.table_name = :table_name', { table_name: '_admin' }),
+        'f',
+        'a.id = f.table_pk'
+      )
+      .where('1=1')
+      .andWhere('a.deleted_at is null')
+      .getRawOne()
 
-          // data
-          const data = await transactionalEntityManager
-            .getRepository(Admin)
-            .createQueryBuilder('a')
+    // data
+    const data = await this.datasource
+      .getRepository(Admin)
+      .createQueryBuilder('a')
+      .select([
+        'a.id as id',
+        'a.account as account',
+        'a.password as password',
+        'a.username as username',
+        'a.intro as intro',
+        'file_id as profileId',
+        'f.abs_path as abs_path',
+        `concat('${await this.globalService.getGlobal(
+          'imageDomain'
+        )}', '/', f.enc_name) as url`,
+        `case
+          when is_system_admin = 1 and is_admin = 1
+          then 1
+          else 0
+        end as level`,
+        'is_system_admin as isSystemAdmin',
+        'is_admin as isAdmin',
+        'a.created_at as createdAt',
+        'a.updated_at as updatedAt'
+      ])
+      .leftJoin(
+        (qb) =>
+          qb
+            .from(File, 'file')
             .select([
-              'a.id as id',
-              'a.account as account',
-              'a.password as password',
-              'a.username as username',
-              'a.intro as intro',
-              'file_id as profileId',
-              'f.abs_path as abs_path',
-              `concat('${await this.globalService.getGlobal(
-                'imageDomain'
-              )}', '/', f.enc_name) as url`,
-              `role as role`,
-              'a.created_at as createdAt',
-              'a.updated_at as updatedAt'
+              'file.id as file_id',
+              'file.abs_path',
+              'file.table_pk',
+              'file.enc_name'
             ])
-            .leftJoin(
-              (qb) =>
-                qb
-                  .from(File, 'file')
-                  .select([
-                    'file.id as file_id',
-                    'file.abs_path',
-                    'file.table_pk',
-                    'file.enc_name'
-                  ])
-                  .where('file.table_name = :table_name', {
-                    table_name: '_admin'
-                  }),
-              'f',
-              'a.id = f.table_pk'
-            )
-            .where('1=1')
-            .andWhere('a.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere(dto.role === '' ? '1=1' : 'role = :role', {
-              role: dto.role
-            })
-            .andWhere(
-              dto.createdStartAt === ''
-                ? '1=1'
-                : 'DATE(a.created_at) >= :createdStartAt',
-              {
-                createdStartAt: dto.createdStartAt
-              }
-            )
-            .andWhere(
-              dto.createdEndAt === ''
-                ? '1=1'
-                : 'DATE(a.created_at) <= :createdEndAt',
-              {
-                createdEndAt: dto.createdEndAt
-              }
-            )
-            .orderBy('a.created_at', 'DESC')
-            .limit(limit)
-            .offset(offset)
-            .getRawMany()
-
-          return {
-            message: '',
-            data: {
-              count: Number(count.count),
-              data: data,
-              info: [
-                { label: '현재', value: Number(count.count) },
-                { label: '전체', value: Number(totalCount.count) }
-              ]
-            }
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
+            .where('file.table_name = :table_name', { table_name: '_admin' }),
+        'f',
+        'a.id = f.table_pk'
+      )
+      .where('1=1')
+      .andWhere('a.deleted_at is null')
+      .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
+        account: `%${dto.account}%`
+      })
+      .andWhere(
+        dto.level === 'SA' ? 'is_system_admin = 1 and is_admin = 1' : '1=1'
+      )
+      .andWhere(
+        dto.level === 'A' ? 'is_system_admin = 0 and is_admin = 1' : '1=1'
+      )
+      .andWhere(
+        dto.createdStartAt === ''
+          ? '1=1'
+          : 'DATE(a.created_at) >= :createdStartAt',
+        {
+          createdStartAt: dto.createdStartAt
         }
-      }
-    )
+      )
+      .andWhere(
+        dto.createdEndAt === '' ? '1=1' : 'DATE(a.created_at) <= :createdEndAt',
+        {
+          createdEndAt: dto.createdEndAt
+        }
+      )
+      .orderBy('a.created_at', 'DESC')
+      .limit(limit)
+      .offset(offset)
+      .getRawMany()
+
+    return {
+      count: Number(count.count),
+      data: data,
+      info: [
+        { label: '현재', value: Number(count.count) },
+        { label: '전체', value: Number(totalCount.count) }
+      ]
+    }
   }
 
-  // ANCHOR get admin by session
-  async getAdminBySession(dto: GetAdminBySessionDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.userId,
-                deletedAt: IsNull()
-              }
-            })
-
-          const profile = await transactionalEntityManager
-            .getRepository(File)
-            .find({
-              where: {
-                tableName: '_admin',
-                tablePk: dto.userId
-              }
-            })
-
-          if (profile.length !== 0) {
-            profile[0]['url'] =
-              (await this.globalService.getGlobal('imageDomain')) +
-              '/' +
-              profile[0].encName
-          }
-          admin['profile'] = profile
-
-          return {
-            message: '',
-            data: admin
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  // ANCHOR get admin detail
+  async getAdminDetail(dto: GetAdminDetailDto) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
-  }
+    })
 
-  // ANCHOR get admin
-  async getAdmin(dto: GetAdminDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.id,
-                deletedAt: IsNull()
-              }
-            })
-
-          const profile = await transactionalEntityManager
-            .getRepository(File)
-            .find({
-              where: {
-                tableName: '_admin',
-                tablePk: dto.id
-              }
-            })
-
-          if (profile.length !== 0) {
-            profile[0]['url'] =
-              (await this.globalService.getGlobal('imageDomain')) +
-              '/' +
-              profile[0].encName
-          }
-          admin['profile'] = profile
-
-          return {
-            message: '',
-            data: admin
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+    const profile = await this.datasource.getRepository(File).find({
+      where: {
+        tableName: '_admin',
+        tablePk: dto.id
       }
-    )
+    })
+
+    if (profile.length !== 0) {
+      profile[0]['url'] =
+        (await this.globalService.getGlobal('imageDomain')) +
+        '/' +
+        profile[0].encName
+    }
+    admin['profile'] = profile
+
+    return admin
   }
 
   // ANCHOR create admin
-  async createAdmin(dto: CreateAdminDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = new Admin()
-          admin.account = dto.account
-          admin.password = await createPassword(dto.password)
-          admin.username = dto.username
-          admin.intro = dto.intro
-          admin.role = dto.role
+  async createAdmin(dto: CreateAdminDto) {
+    const admin = new Admin()
+    admin.account = dto.account
+    admin.password = await createPassword(dto.password)
+    admin.username = dto.username
+    admin.intro = dto.intro
 
-          const createdUser = await transactionalEntityManager
-            .getRepository(Admin)
-            .save(admin)
-          if (dto.profile) {
-            const params = new UpdateAdminProfileDto()
-            params.id = createdUser.id
-            params.profile = dto.profile
-            await this.updateAdminProfile(params)
-          }
-
-          return {
-            message: '관리자 추가가 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
-      }
-    )
+    if (dto.level === 'SA') {
+      admin.isSystemAdmin = 1
+      admin.isAdmin = 1
+    } else {
+      admin.isSystemAdmin = 0
+      admin.isAdmin = 1
+    }
+    const createdAdmin = await this.datasource.getRepository(Admin).save(admin)
+    if (dto.profile) {
+      await this.updateAdminProfile(createdAdmin.id, dto.profile)
+    }
   }
 
   // ANCHOR delete admin
-  async deleteAdmin(dto: DeleteAdminDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          if (dto.userId === Number(dto.id)) {
-            throw new HttpException(
-              '본인 아이디는 삭제할 수 없습니다.',
-              HttpStatus.BAD_REQUEST
-            )
-          }
-
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.id,
-                deletedAt: IsNull()
-              }
-            })
-
-          if (!admin) {
-            throw new HttpException(
-              '삭제하려는 대상이 존재하지 않습니다.',
-              HttpStatus.BAD_REQUEST
-            )
-          }
-
-          admin.deletedAt = moment().format(DATE.DATETIME)
-          await transactionalEntityManager.getRepository(Admin).save(admin)
-
-          return {
-            message: '관리자 삭제가 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  async deleteAdmin(dto: DeleteAdminDto) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
+    })
+
+    if (!admin) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Target to delete does not exist.',
+          data: null
+        },
+        HttpStatus.BAD_REQUEST
+      )
+    }
+
+    admin.deletedAt = moment().format(DATE.DATETIME)
+    await this.datasource.getRepository(Admin).save(admin)
   }
 
   // ANCHOR update admin password
-  async updateAdminPassword(
-    dto: UpdateAdminPasswordDto
-  ): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.id,
-                deletedAt: IsNull()
-              }
-            })
-          admin.password = await createPassword(dto.newPassword)
-          admin.updatedAt = moment().format(DATE.DATETIME)
-          await transactionalEntityManager.getRepository(Admin).save(admin)
-
-          return {
-            message: '비밀번호 변경이 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  async updateAdminPassword(dto: UpdateAdminPasswordDto) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
+    })
+    admin.password = await createPassword(dto.newPassword)
+    admin.updatedAt = moment().format(DATE.DATETIME)
+    await this.datasource.getRepository(Admin).save(admin)
   }
 
   // ANCHOR update admin username
-  async updateAdminUsername(
-    dto: UpdateAdminUsernameDto
-  ): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.id,
-                deletedAt: IsNull()
-              }
-            })
-          admin.username = dto.username
-          admin.updatedAt = moment().format(DATE.DATETIME)
-          await transactionalEntityManager.getRepository(Admin).save(admin)
-
-          return {
-            message: '관리자명 변경이 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  async updateAdminUsername(dto: UpdateAdminUsernameDto) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
+    })
+    admin.username = dto.username
+    admin.updatedAt = moment().format(DATE.DATETIME)
+    await this.datasource.getRepository(Admin).save(admin)
   }
 
-  // ANCHOR update admin role
-  async updateAdminRole(dto: UpdateAdminRoleDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.id,
-                deletedAt: IsNull()
-              }
-            })
-          admin.role = dto.role
-          admin.updatedAt = moment().format(DATE.DATETIME)
-          await transactionalEntityManager.getRepository(Admin).save(admin)
-
-          return {
-            message: '관리자 권한 변경이 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  // ANCHOR update admin level
+  async updateAdminLevel(dto: UpdateAdminLevelDto) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
+    })
+    if (dto.level === 'SA') {
+      admin.isSystemAdmin = 1
+      admin.isAdmin = 1
+    } else {
+      admin.isSystemAdmin = 0
+      admin.isAdmin = 1
+    }
+    admin.updatedAt = moment().format(DATE.DATETIME)
+    await this.datasource.getRepository(Admin).save(admin)
   }
 
   // ANCHOR update admin profile
-  async updateAdminProfile(dto: UpdateAdminProfileDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const userId = dto.id
-          const profile = dto.profile
-
-          const userProfile = await transactionalEntityManager
-            .getRepository(File)
-            .findOne({
-              where: {
-                tableName: '_admin',
-                tablePk: userId
-              }
-            })
-
-          if (userProfile) {
-            userProfile.tableName = null
-            userProfile.tablePk = null
-            userProfile.updatedAt = moment().format(DATE.DATETIME)
-            await transactionalEntityManager
-              .getRepository(File)
-              .save(userProfile)
-          }
-          if (profile[0]) {
-            const updateProfile = await transactionalEntityManager
-              .getRepository(File)
-              .findOne({
-                where: {
-                  id: profile[0]
-                }
-              })
-            updateProfile.tableName = '_admin'
-            updateProfile.tablePk = userId
-            await transactionalEntityManager
-              .getRepository(File)
-              .save(updateProfile)
-          }
-
-          return {
-            message: '관리자 프로필 변경이 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  async updateAdminProfile(userId: number, profile: number[]) {
+    const adminProfile = await this.datasource.getRepository(File).findOne({
+      where: {
+        tableName: '_admin',
+        tablePk: userId
       }
-    )
+    })
+
+    if (adminProfile) {
+      adminProfile.tableName = null
+      adminProfile.tablePk = null
+      adminProfile.updatedAt = moment().format(DATE.DATETIME)
+      await this.datasource.getRepository(File).save(adminProfile)
+    }
+    if (profile[0]) {
+      const updateProfile = await this.datasource.getRepository(File).findOne({
+        where: {
+          id: profile[0]
+        }
+      })
+      updateProfile.tableName = '_admin'
+      updateProfile.tablePk = userId
+      await this.datasource.getRepository(File).save(updateProfile)
+    }
   }
 
   // ANCHOR update admin intro
-  async updateAdminIntro(dto: UpdateAdminIntroDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const admin = await transactionalEntityManager
-            .getRepository(Admin)
-            .findOne({
-              where: {
-                id: dto.id,
-                deletedAt: IsNull()
-              }
-            })
-
-          admin.intro = dto.intro
-          await transactionalEntityManager.getRepository(Admin).save(admin)
-
-          return {
-            message: '관리자 자기소개 변경이 완료되었습니다.',
-            data: null
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
-        }
+  async updateAdminIntro(dto: UpdateAdminIntroDto) {
+    const admin = await this.datasource.getRepository(Admin).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
+    })
+
+    admin.intro = dto.intro
+    await this.datasource.getRepository(Admin).save(admin)
   }
 
-  // ANCHOR get login history list
-  async getLoginHistoryList(
-    dto: GetLoginHistoryListDto
-  ): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const limit = dto.limit === 0 ? 10 : dto.limit
-          const offset = (dto.page - 1) * limit
+  // ANCHOR get login history admin list
+  async getLoginHistoryAdminList(dto: GetLoginHistoryListDto) {
+    const limit = dto.limit === 0 ? 10 : dto.limit
+    const offset = (dto.page - 1) * limit
 
-          // count
-          const count = await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .createQueryBuilder('lh')
-            .select(['count(1) as count'])
-            .innerJoin(Admin, 'a', 'lh.user_id = a.id')
-            .where('1=1')
-            .andWhere('lh.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere(dto.type === '' ? '1=1' : 'lh.type = :type', {
-              type: `${dto.type}`
-            })
-            .andWhere(
-              dto.createdStartAt === ''
-                ? '1=1'
-                : 'DATE(lh.created_at) >= :createdStartAt',
-              {
-                createdStartAt: dto.createdStartAt
-              }
-            )
-            .andWhere(
-              dto.createdEndAt === ''
-                ? '1=1'
-                : 'DATE(lh.created_at) <= :createdEndAt',
-              {
-                createdEndAt: dto.createdEndAt
-              }
-            )
-            .getRawOne()
-
-          // count
-          const totalCount = await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .createQueryBuilder('lh')
-            .select(['count(1) as count'])
-            .innerJoin(Admin, 'a', 'lh.user_id = a.id')
-            .where('1=1')
-            .andWhere('lh.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere(
-              dto.createdStartAt === ''
-                ? '1=1'
-                : 'DATE(lh.created_at) >= :createdStartAt',
-              {
-                createdStartAt: dto.createdStartAt
-              }
-            )
-            .andWhere(
-              dto.createdEndAt === ''
-                ? '1=1'
-                : 'DATE(lh.created_at) <= :createdEndAt',
-              {
-                createdEndAt: dto.createdEndAt
-              }
-            )
-            .getRawOne()
-
-          // count
-          const loginCount = await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .createQueryBuilder('lh')
-            .select(['count(1) as count'])
-            .innerJoin(Admin, 'a', 'lh.user_id = a.id')
-            .where('1=1')
-            .andWhere('lh.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere('lh.type = 1')
-
-            .getRawOne()
-
-          // count
-          const logoutCount = await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .createQueryBuilder('lh')
-            .select(['count(1) as count'])
-            .innerJoin(Admin, 'a', 'lh.user_id = a.id')
-            .where('1=1')
-            .andWhere('lh.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere('lh.type = 0')
-
-            .getRawOne()
-
-          // data
-          const data = await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .createQueryBuilder('lh')
-            .select([
-              'lh.id as id',
-              'lh.user_id as userId',
-              'a.account as account',
-              'a.username as username',
-              'lh.type as type',
-              'lh.created_at as createdAt',
-              'lh.updated_at as updatedAt'
-            ])
-            .innerJoin(Admin, 'a', 'lh.user_id = a.id')
-            .where('1=1')
-            .andWhere('lh.deleted_at is null')
-            .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
-              account: `%${dto.account}%`
-            })
-            .andWhere(dto.type === '' ? '1=1' : 'lh.type = :type', {
-              type: `${dto.type}`
-            })
-            .andWhere(
-              dto.createdStartAt === ''
-                ? '1=1'
-                : 'DATE(lh.created_at) >= :createdStartAt',
-              {
-                createdStartAt: dto.createdStartAt
-              }
-            )
-            .andWhere(
-              dto.createdEndAt === ''
-                ? '1=1'
-                : 'DATE(lh.created_at) <= :createdEndAt',
-              {
-                createdEndAt: dto.createdEndAt
-              }
-            )
-            .orderBy('lh.created_at', 'DESC')
-            .limit(limit)
-            .offset(offset)
-            .getRawMany()
-
-          return {
-            message: '',
-            data: {
-              count: Number(count.count),
-              data: data,
-              info: [
-                { label: '현재', value: Number(count.count) },
-                { label: '전체', value: Number(totalCount.count) },
-                { label: '로그인', value: Number(loginCount.count) },
-                { label: '로그아웃', value: Number(logoutCount.count) }
-              ]
-            }
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
+    // count
+    const count = await this.datasource
+      .getRepository(LoginHistoryAdmin)
+      .createQueryBuilder('lh')
+      .select(['count(1) as count'])
+      .innerJoin(Admin, 'a', 'lh.admin_id = a.id')
+      .where('1=1')
+      .andWhere('lh.deleted_at is null')
+      .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
+        account: `%${dto.account}%`
+      })
+      .andWhere(dto.type === '' ? '1=1' : 'lh.type = :type', {
+        type: `${dto.type}`
+      })
+      .andWhere(
+        dto.createdStartAt === ''
+          ? '1=1'
+          : 'DATE(lh.created_at) >= :createdStartAt',
+        {
+          createdStartAt: dto.createdStartAt
         }
-      }
-    )
+      )
+      .andWhere(
+        dto.createdEndAt === ''
+          ? '1=1'
+          : 'DATE(lh.created_at) <= :createdEndAt',
+        {
+          createdEndAt: dto.createdEndAt
+        }
+      )
+      .getRawOne()
+
+    // count
+    const totalCount = await this.datasource
+      .getRepository(LoginHistoryAdmin)
+      .createQueryBuilder('lh')
+      .select(['count(1) as count'])
+      .innerJoin(Admin, 'a', 'lh.admin_id = a.id')
+      .where('1=1')
+      .andWhere('lh.deleted_at is null')
+      .getRawOne()
+
+    // count
+    const loginCount = await this.datasource
+      .getRepository(LoginHistoryAdmin)
+      .createQueryBuilder('lh')
+      .select(['count(1) as count'])
+      .innerJoin(Admin, 'a', 'lh.admin_id = a.id')
+      .where('1=1')
+      .andWhere('lh.deleted_at is null')
+      .andWhere('lh.type = 1')
+      .getRawOne()
+
+    // count
+    const logoutCount = await this.datasource
+      .getRepository(LoginHistoryAdmin)
+      .createQueryBuilder('lh')
+      .select(['count(1) as count'])
+      .innerJoin(Admin, 'a', 'lh.admin_id = a.id')
+      .where('1=1')
+      .andWhere('lh.deleted_at is null')
+      .andWhere('lh.type = 0')
+      .getRawOne()
+
+    // data
+    const data = await this.datasource
+      .getRepository(LoginHistoryAdmin)
+      .createQueryBuilder('lh')
+      .select([
+        'lh.id as id',
+        'lh.admin_id as userId',
+        'a.account as account',
+        'a.username as username',
+        'lh.type as type',
+        'lh.created_at as createdAt',
+        'lh.updated_at as updatedAt'
+      ])
+      .innerJoin(Admin, 'a', 'lh.admin_id = a.id')
+      .where('1=1')
+      .andWhere('lh.deleted_at is null')
+      .andWhere(dto.account === '' ? '1=1' : 'a.account like :account', {
+        account: `%${dto.account}%`
+      })
+      .andWhere(dto.type === '' ? '1=1' : 'lh.type = :type', {
+        type: `${dto.type}`
+      })
+      .andWhere(
+        dto.createdStartAt === ''
+          ? '1=1'
+          : 'DATE(lh.created_at) >= :createdStartAt',
+        {
+          createdStartAt: dto.createdStartAt
+        }
+      )
+      .andWhere(
+        dto.createdEndAt === ''
+          ? '1=1'
+          : 'DATE(lh.created_at) <= :createdEndAt',
+        {
+          createdEndAt: dto.createdEndAt
+        }
+      )
+      .orderBy('lh.created_at', 'DESC')
+      .limit(limit)
+      .offset(offset)
+      .getRawMany()
+
+    return {
+      count: Number(count.count),
+      data: data,
+      info: [
+        { label: '현재', value: Number(count.count) },
+        { label: '전체', value: Number(totalCount.count) },
+        { label: '로그인', value: Number(loginCount.count) },
+        { label: '로그아웃', value: Number(logoutCount.count) }
+      ]
+    }
   }
 
-  // ANCHOR get login history
-  async getLoginHistory(dto: GetLoginHistoryDto): Promise<CommonResult> {
-    return await this.datasource.transaction(
-      async (transactionalEntityManager) => {
-        try {
-          const data = await transactionalEntityManager
-            .getRepository(LoginHistory)
-            .findOne({ where: { id: dto.id } })
+  // ANCHOR get user list
+  async getUserList(dto: GetUserListDto) {
+    const limit = dto.limit === 0 ? 10 : dto.limit
+    const offset = (dto.page - 1) * limit
 
-          return {
-            message: '',
-            data: data
-          }
-        } catch (error) {
-          throw new HttpException(
-            error.message,
-            HttpStatus.INTERNAL_SERVER_ERROR
-          )
+    // count
+    const count = await this.datasource
+      .getRepository(User)
+      .createQueryBuilder('u')
+      .select(['count(1) as count'])
+      .where('1=1')
+      .andWhere('u.deleted_at is null')
+      .andWhere(dto.userId === '' ? '1=1' : 'u.id = :userId', {
+        userId: dto.userId
+      })
+      .andWhere(dto.account === '' ? '1=1' : 'u.account like :account', {
+        account: `%${dto.account}%`
+      })
+      .andWhere(dto.username === '' ? '1=1' : 'u.username like :username', {
+        username: `%${dto.username}%`
+      })
+
+      .andWhere(
+        dto.createdStartAt === ''
+          ? '1=1'
+          : 'DATE(u.created_at) >= :createdStartAt',
+        {
+          createdStartAt: dto.createdStartAt
         }
+      )
+      .andWhere(
+        dto.createdEndAt === '' ? '1=1' : 'DATE(u.created_at) <= :createdEndAt',
+        {
+          createdEndAt: dto.createdEndAt
+        }
+      )
+      .getRawOne()
+
+    // count
+    const totalCount = await this.datasource
+      .getRepository(User)
+      .createQueryBuilder('u')
+      .select(['count(1) as count'])
+      .where('1=1')
+      .andWhere('u.deleted_at is null')
+      .getRawOne()
+
+    // count
+    const deleteCount = await this.datasource
+      .getRepository(User)
+      .createQueryBuilder('u')
+      .select(['count(1) as count'])
+      .where('1=1')
+      .andWhere('u.deleted_at is not null')
+      .getRawOne()
+
+    // data
+    const data = await this.datasource
+      .getRepository(User)
+      .createQueryBuilder('u')
+      .select([
+        'u.id as id',
+        'u.account as account',
+        'u.username as username',
+        'u.intro as intro',
+        'u.is_ban as isBan',
+        'u.created_at as createdAt',
+        'u.updated_at as updatedAt',
+        'u.deleted_at as deletedAt',
+
+        // 추가 정보
+        `concat('${await this.globalService.getGlobal(
+          'imageDomain'
+        )}', '/', f.enc_name) as url`
+      ])
+      .leftJoin(File, 'f', 'u.profile_img = f.id')
+      .where('1=1')
+      .andWhere('u.deleted_at is null')
+      .andWhere(dto.userId === '' ? '1=1' : 'u.id = :userId', {
+        userId: dto.userId
+      })
+      .andWhere(dto.account === '' ? '1=1' : 'u.account like :account', {
+        account: `%${dto.account}%`
+      })
+      .andWhere(dto.username === '' ? '1=1' : 'u.username like :username', {
+        username: `%${dto.username}%`
+      })
+
+      .andWhere(
+        dto.createdStartAt === ''
+          ? '1=1'
+          : 'DATE(u.created_at) >= :createdStartAt',
+        {
+          createdStartAt: dto.createdStartAt
+        }
+      )
+      .andWhere(
+        dto.createdEndAt === '' ? '1=1' : 'DATE(u.created_at) <= :createdEndAt',
+        {
+          createdEndAt: dto.createdEndAt
+        }
+      )
+      .orderBy('u.created_at', 'DESC')
+      .limit(limit)
+      .offset(offset)
+      .getRawMany()
+
+    return {
+      count: Number(count.count),
+      data: data,
+      info: [
+        { label: '현재', value: Number(count.count) },
+        { label: '전체', value: Number(totalCount.count) },
+        { label: '삭제', value: Number(deleteCount.count) }
+      ]
+    }
+  }
+
+  // ANCHOR get user detail
+  async getUserDetail(dto: GetUserDetailDto) {
+    const user = await this.datasource.getRepository(User).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
       }
-    )
+    })
+
+    return user
+  }
+
+  // ANCHOR update user detail
+  async updateUserDetail(dto: UpdateUserDetailDto) {
+    const user = await this.datasource.getRepository(User).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
+      }
+    })
+
+    if (!user) {
+      //
+      // throw new NotFoundException('user not found')
+    }
+
+    user.username = dto.username
+    user.account = dto.account
+
+    await this.datasource.getRepository(User).save(user)
+  }
+
+  // ANCHOR update user is ban
+  async updateUserIsBan(dto: UpdateUserIsBanDto) {
+    const user = await this.datasource.getRepository(User).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
+      }
+    })
+
+    if (!user) {
+      return {
+        result: false,
+        message: '유효하지 않은 사용자입니다.'
+      }
+    }
+
+    user.isBan = dto.isBan
+
+    await this.datasource.getRepository(User).save(user)
+
+    return {
+      result: true,
+      message:
+        dto.isBan === 1
+          ? '사용자가 밴되었습니다.'
+          : '사용자의 밴이 해제되었습니다.'
+    }
+  }
+
+  // ANCHOR delete user
+  async deleteUser(dto: DeleteUserDto) {
+    const user = await this.datasource.getRepository(User).findOne({
+      where: {
+        id: dto.id,
+        deletedAt: IsNull()
+      }
+    })
+
+    if (!user) {
+      return {
+        result: false,
+        message: '유효하지 않은 사용자입니다.'
+      }
+    }
+
+    user.deletedAt = moment().format(DATE.DATETIME)
+
+    await this.datasource.getRepository(User).save(user)
+
+    return {
+      result: true,
+      message: '사용자가 삭제되었습니다.'
+    }
   }
 }

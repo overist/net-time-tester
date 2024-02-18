@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsArray, IsNotEmpty, Length } from 'class-validator'
-import { Match } from 'src/common/validation/match.decorator'
+import { IsArray, IsNotEmpty } from 'class-validator'
 
 export class UpdateAdminProfileDto {
   @ApiProperty({
-    description: 'admin id',
+    description: 'user id',
     example: 1
   })
   @IsNotEmpty()

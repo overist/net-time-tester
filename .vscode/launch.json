@@ -12,12 +12,6 @@
       "osx": {
         "args": ["start:dev"]
       },
-      "linux": {
-        "args": ["start:dev"]
-      },
-      "windows": {
-        "args": ["start:dev"]
-      },
       "console": "integratedTerminal",
       "restart": true,
       "autoAttachChildProcesses": true,

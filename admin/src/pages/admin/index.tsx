@@ -12,13 +12,13 @@ import Content from 'src/components/admin/content'
 import {
   getAdminList,
   createAdmin,
-  getAdmin,
+  getAdminDetail,
   deleteAdmin,
   updateAdminPassword,
   updateAdminUsername,
+  updateAdminLevel,
   updateAdminProfile,
-  updateAdminIntro,
-  updateAdminRole
+  updateAdminIntro
 } from 'src/apis/admin'
 
 // ** Redux
@@ -33,7 +33,6 @@ import {
   setDetailAPI,
   setDeleteAPI,
   setActionList,
-  setLoadAPI,
   initData
 } from 'src/store/apps/crud'
 import { useEffect } from 'react'
@@ -52,7 +51,7 @@ const Admin = () => {
     dispatch(setCreateAPI(createAdmin))
 
     // NOTE 상세 API 정의
-    dispatch(setDetailAPI(getAdmin))
+    dispatch(setDetailAPI(getAdminDetail))
 
     // NOTE 삭제 API 정의
     dispatch(setDeleteAPI(deleteAdmin))
@@ -73,7 +72,7 @@ const Admin = () => {
         '계정',
         '소개',
         '비밀번호',
-        '관리자명',
+        '사용자명',
         '권한',
         '생성일자',
         '수정일자',
@@ -104,7 +103,7 @@ const Admin = () => {
         },
         {
           type: 'text',
-          label: '관리자명',
+          label: '사용자명',
           key: 'username',
           value: ''
         },
@@ -126,7 +125,7 @@ const Admin = () => {
         {
           type: 'select',
           label: '권한',
-          key: 'role',
+          key: 'level',
           value: '',
           list: [
             {
@@ -161,7 +160,7 @@ const Admin = () => {
           value: ''
         },
         {
-          label: '관리자명',
+          label: '사용자명',
           key: 'username',
           value: ''
         },
@@ -205,7 +204,7 @@ const Admin = () => {
         {
           type: 'select',
           label: '권한',
-          key: 'role',
+          key: 'level',
           value: '',
           list: [
             {
@@ -256,7 +255,7 @@ const Admin = () => {
               maxFileSizeBytes: 1024 * 1024 * 4
             }
           ],
-          loadAPI: getAdmin,
+          loadAPI: getAdminDetail,
           updateAPI: updateAdminProfile
         },
         {
@@ -270,13 +269,19 @@ const Admin = () => {
               value: ''
             }
           ],
-          loadAPI: getAdmin,
+          loadAPI: getAdminDetail,
           updateAPI: updateAdminIntro
         },
         {
           icon: 'bx:pencil',
           label: '비밀번호 변경',
           content: [
+            {
+              type: 'password',
+              label: '기존 비밀번호',
+              key: 'oldPassword',
+              value: ''
+            },
             {
               type: 'password',
               label: '새로운 비밀번호',
@@ -295,16 +300,16 @@ const Admin = () => {
         },
         {
           icon: 'bx:pencil',
-          label: '관리자명 변경',
+          label: '사용자명 변경',
           content: [
             {
               type: 'text',
-              label: '관리자명',
+              label: '사용자명',
               key: 'username',
               value: ''
             }
           ],
-          loadAPI: getAdmin,
+          loadAPI: getAdminDetail,
           updateAPI: updateAdminUsername
         },
         {
@@ -314,7 +319,7 @@ const Admin = () => {
             {
               type: 'select',
               label: '권한',
-              key: 'role',
+              key: 'level',
               value: '',
               list: [
                 {
@@ -328,8 +333,8 @@ const Admin = () => {
               ]
             }
           ],
-          loadAPI: getAdmin,
-          updateAPI: updateAdminRole
+          loadAPI: getAdminDetail,
+          updateAPI: updateAdminLevel
         }
       ])
     )

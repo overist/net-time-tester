@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  cdk-db-dev:
+  db-dev:
     image: mysql:8
     environment:
       # LANGUAGE OR LANG UTF-8 설정을 하지 않으면
@@ -18,7 +18,7 @@ services:
       - ./docker/ddl:/docker-entrypoint-initdb.d
     ports:
       - 4001:3306
-  cdk-img-dev:
+  img-dev:
     image: nginx:1.23.2
     ports:
       - 5001:7000

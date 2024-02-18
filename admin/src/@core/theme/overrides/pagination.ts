@@ -70,7 +70,7 @@ const Pagination = (theme: Theme) => {
           borderRadius: '50%',
           padding: theme.spacing(3.75, 2),
           '&.MuiPaginationItem-rounded': {
-            // borderRadius: 8
+            borderRadius: 0
           }
         }
       }

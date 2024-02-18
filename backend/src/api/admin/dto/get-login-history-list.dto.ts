@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
 import { IsNotEmpty } from 'class-validator'
+import { Type } from 'class-transformer'
 
 export class GetLoginHistoryListDto {
   @ApiProperty({

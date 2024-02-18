@@ -10,7 +10,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import Layout from 'src/@core/layouts/Layout'
 
 // ** Navigation Imports
-import VerticalNavItems from 'src/navigation/vertical'
+import VerticalNavItemsForSystemAdmin from 'src/navigation/vertical/system-admin'
+import VerticalNavItemsForAdmin from 'src/navigation/vertical/admin'
 import HorizontalNavItems from 'src/navigation/horizontal'
 
 // ** Component Import
@@ -23,6 +24,7 @@ import HorizontalAppBarContent from './components/horizontal/AppBarContent'
 
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
+import { useAuth } from 'src/hooks/useAuth'
 
 interface Props {
   children: ReactNode
@@ -32,6 +34,15 @@ interface Props {
 const UserLayout = ({ children, contentHeightFixed }: Props) => {
   // ** Hooks
   const { settings, saveSettings } = useSettings()
+  const { user } = useAuth()
+
+  // 메뉴 분기
+  let menu
+  if (user.role === 'SYSTEM_ADMIN') {
+    menu = VerticalNavItemsForSystemAdmin()
+  } else if (user.role === 'ADMIN') {
+    menu = VerticalNavItemsForAdmin()
+  }
 
   // ** Vars for server side navigation
   // const { menuItems: verticalMenuItems } = ServerSideVerticalNavItems()
@@ -60,7 +71,7 @@ const UserLayout = ({ children, contentHeightFixed }: Props) => {
         contentHeightFixed={contentHeightFixed}
         verticalLayoutProps={{
           navMenu: {
-            navItems: VerticalNavItems()
+            navItems: menu
 
             // Uncomment the below line when using server-side menu in vertical layout and comment the above line
             // navItems: verticalMenuItems

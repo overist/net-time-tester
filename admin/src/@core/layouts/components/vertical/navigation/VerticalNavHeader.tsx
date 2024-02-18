@@ -14,8 +14,7 @@ import { LayoutProps } from 'src/@core/layouts/types'
 import Icon from 'src/@core/components/icon'
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig'
-import Logo from 'src/components/custom/logo'
+import Logo from 'src/components/logo'
 import { RootState } from 'src/store'
 import { useSelector } from 'react-redux'
 
@@ -50,7 +49,7 @@ const StyledLink = styled('a')({
   textDecoration: 'none'
 })
 
-const VerticalNavHeader = (props: any) => {
+const VerticalNavHeader = (props: Props) => {
   // ** Props
   const {
     hidden,
@@ -127,7 +126,7 @@ const VerticalNavHeader = (props: any) => {
       ) : (
         <Link href="/" passHref>
           <StyledLink>
-            <Logo width={20} height={20} path={app.appLogo} />
+            <Logo width={50} path={'/images/logo.png'} />
             <Typography
               variant="body1"
               sx={{
@@ -144,7 +143,7 @@ const VerticalNavHeader = (props: any) => {
                 })
               }}
             >
-              {themeConfig.templateName}
+              {app.appName}
             </Typography>
           </StyledLink>
         </Link>

@@ -1,11 +1,6 @@
-// ** Module
 import { Module } from '@nestjs/common'
-
-// ** Controller
-import { ImageController } from './image.controller'
-
-// ** Service
 import { GlobalService } from '../global/global.service'
+import { ImageController } from './image.controller'
 import { ImageService } from './image.service'
 
 @Module({

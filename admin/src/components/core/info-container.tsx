@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from 'src/store'
 import Grid from '@mui/material/Grid'
 import { BigNumber } from 'bignumber.js'
@@ -13,7 +13,7 @@ const InfoContainer = () => {
         {pagination.info &&
           pagination?.info.map((item, idx) => {
             return (
-              <Grid item key={idx}>
+              <Grid item key={idx} sx={{ mb: 2 }}>
                 <div
                   style={{
                     display: 'flex',
@@ -43,7 +43,7 @@ const InfoContainer = () => {
                       fontSize: '12px'
                     }}
                   >
-                    {new BigNumber(item.value).toFormat()}
+                    {new BigNumber(item.value ? item.value : 0).toFormat()}
                   </div>
                 </div>
               </Grid>

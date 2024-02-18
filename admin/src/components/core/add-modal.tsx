@@ -2,14 +2,7 @@ import { useState } from 'react'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogActions from '@mui/material/DialogActions'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import AddConfirmModal from 'src/components/core/add-confirm-modal'
 import { useDispatch, useSelector } from 'react-redux'
@@ -35,6 +28,7 @@ const AddModal = ({ openModal, handleClickCloseModal }) => {
 
   // 폼 데이터 변경
   const handleChangeForm = (key: string, value: string) => {
+    
     dispatch(updateAddForm({ key, value }))
   }
 
@@ -48,10 +42,7 @@ const AddModal = ({ openModal, handleClickCloseModal }) => {
       >
         <DialogTitle id="alert-dialog-title">추가</DialogTitle>
         <DialogContent>
-          <ModalFormContent
-            formContent={addForm}
-            handleChangeForm={handleChangeForm}
-          />
+          <ModalFormContent formContent={addForm} handleChangeForm={handleChangeForm} />
         </DialogContent>
         <DialogActions>
           <Button

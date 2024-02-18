@@ -7,30 +7,28 @@ import { LayoutProps } from 'src/@core/layouts/types'
 // ** Layout Components
 import VerticalLayout from './VerticalLayout'
 import HorizontalLayout from './HorizontalLayout'
-import { getAppInfo } from 'src/apis/global'
 import { AppDispatch } from 'src/store'
 import { useDispatch } from 'react-redux'
-import { setAppInfo } from 'src/store/apps/app'
 
 const Layout = (props: LayoutProps) => {
   // ** Props
   const { hidden, children, settings, saveSettings } = props
 
-  // ** Hooks
-  const dispatch = useDispatch<AppDispatch>()
-
   // ** Ref
   const isCollapsed = useRef(settings.navCollapsed)
 
+  // ** Hooks
+  const dispatch = useDispatch<AppDispatch>()
+
   const initData = async () => {
-    try {
-      const { data: res } = await getAppInfo()
-      if (res.statusCode === 200) {
-        dispatch(setAppInfo(res.data))
-      }
-    } catch (err) {
-      //
-    }
+    // try {
+    //   const { data: res } = await getAppInfo()
+    //   if (res.statusCode === 200) {
+    //     dispatch(setAppInfo(res.data))
+    //   }
+    // } catch (err) {
+    //   //
+    // }
   }
 
   useEffect(() => {

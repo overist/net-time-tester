@@ -41,7 +41,7 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
 
 const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
   width: '100%',
-  // borderRadius: 8,
+  borderRadius: 0,
   marginTop: theme.spacing(0.5),
   padding: `${theme.spacing(0, 6)} !important`
 }))
@@ -77,6 +77,9 @@ const LayoutAppBar = (props: Props) => {
         className="navbar-content-container"
         sx={{
           ...(appBarBlur && { backdropFilter: 'saturate(200%) blur(6px)' }),
+
+          // minHeight: (theme) =>
+          //   `${theme.mixins.toolbar.minHeight as number}px !important`,
           minHeight: '30px',
           backgroundColor: (theme) =>
             hexToRGBA(theme.palette.background.paper, appBarBlur ? 0.95 : 1),

@@ -52,10 +52,13 @@ const UserThemeOptions = (): ThemeOptions => {
       MuiTableCell: {
         styleOverrides: {
           root: {
-            padding: '2px !important'
+            padding: '2px !important',
+            paddingLeft: '10px !important',
+            paddingRight: '10px !important'
           },
           head: {
-            paddingBottom: '10px !important'
+            paddingBottom: '10px !important',
+            whiteSpace: 'nowrap !iimportant'
           }
         }
       },
@@ -80,6 +83,7 @@ const UserThemeOptions = (): ThemeOptions => {
         '"Nanum Gothic", "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
       fontSize: '12px !important'
     }
+
     /*
     palette:{
       primary: {
@@ -175,7 +179,7 @@ const UserThemeOptions = (): ThemeOptions => {
       }
     },
     shape: {
-      borderRadius: 8
+      borderRadius: 0
     },
     typography: {
       fontFamily:

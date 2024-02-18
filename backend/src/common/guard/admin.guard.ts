@@ -14,7 +14,8 @@ export class AdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
     if (
       request.session.userId &&
-      (request.session.role === 'A' || request.session.role === 'SA')
+      (request.session.role === 'ADMIN' ||
+        request.session.role === 'SYSTEM_ADMIN')
     ) {
       return true
     } else {

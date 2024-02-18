@@ -3,7 +3,7 @@ import { IsNotEmpty, Length } from 'class-validator'
 
 export class UpdateAdminUsernameDto {
   @ApiProperty({
-    description: 'admin id',
+    description: 'user id',
     example: 1
   })
   @IsNotEmpty()

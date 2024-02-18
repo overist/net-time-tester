@@ -17,7 +17,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const exceptionResponse = exception.getResponse()
 
     // class-validator error message
-    let message = exceptionResponse['message']
+    let message = ''
+    if (exceptionResponse) {
+      message = exceptionResponse['message']
+    }
 
     if (message === undefined) {
       // throw exception error message

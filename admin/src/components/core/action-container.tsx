@@ -16,7 +16,6 @@ import {
   setLoadAPI,
   setUpdateAPI
 } from 'src/store/apps/crud'
-import { useRouter } from 'next/router'
 
 const ActionContainer = ({ id, detailAction, deleteAction }) => {
   // ** Hooks
@@ -25,7 +24,6 @@ const ActionContainer = ({ id, detailAction, deleteAction }) => {
   const actionList = crud.actionList
   const detailForm = crud.detailForm
   const detailAPI = crud.detailAPI
-  const router = useRouter()
 
   // ** State
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -156,31 +154,16 @@ const ActionContainer = ({ id, detailAction, deleteAction }) => {
         )}
 
         {actionList.map((item, idx) => {
-          if (item.type === 'redirect') {
-            return (
-              <MenuItem
-                key={idx}
-                onClick={() => {
-                  router.push(`${item.url}?id=${id}`)
-                }}
-                sx={{ '& svg': { mr: 2 } }}
-              >
-                <Icon icon={item.icon} fontSize={20} />
-                {item.label}
-              </MenuItem>
-            )
-          } else {
-            return (
-              <MenuItem
-                key={idx}
-                onClick={() => handleClickEdit(item)}
-                sx={{ '& svg': { mr: 2 } }}
-              >
-                <Icon icon={item.icon} fontSize={20} />
-                {item.label}
-              </MenuItem>
-            )
-          }
+          return (
+            <MenuItem
+              key={idx}
+              onClick={() => handleClickEdit(item)}
+              sx={{ '& svg': { mr: 2 } }}
+            >
+              <Icon icon={item.icon} fontSize={20} />
+              {item.label}
+            </MenuItem>
+          )
         })}
       </Menu>
 

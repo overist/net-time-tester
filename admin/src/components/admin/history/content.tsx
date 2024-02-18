@@ -4,7 +4,6 @@ import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Chip from '@mui/material/Chip'
 
-import ActionContainer from 'src/components/core/action-container'
 import DATE from 'src/common/constants/date'
 import { useSelector } from 'react-redux'
 import { RootState } from 'src/store'
@@ -39,13 +38,6 @@ const Content = () => {
               {row?.updatedAt
                 ? moment(row?.updatedAt).format(DATE.DATETIME)
                 : '-'}
-            </TableCell>
-            <TableCell>
-              <ActionContainer
-                id={row.id}
-                detailAction={true}
-                deleteAction={false}
-              />
             </TableCell>
           </TableRow>
         ))}

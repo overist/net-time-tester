@@ -9,10 +9,8 @@ import invoice from 'src/store/apps/invoice'
 import calendar from 'src/store/apps/calendar'
 import permissions from 'src/store/apps/permissions'
 
-// ** Custom Store
 import crud from 'src/store/apps/crud'
 import app from 'src/store/apps/app'
-import icon from 'src/store/apps/icon'
 
 export const store = configureStore({
   reducer: {
@@ -23,8 +21,7 @@ export const store = configureStore({
     calendar,
     permissions,
     crud,
-    app,
-    icon
+    app
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

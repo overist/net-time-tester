@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
@@ -32,6 +32,9 @@ const EditModal = ({ openEditModal, setOpenEditModal, title }) => {
     dispatch(updateActionForm({ key, value }))
   }
 
+  // ** Side Effect
+  const hasDateTimeType = actionForm.some((item) => item.type === 'datetime')
+
   return (
     <>
       <Dialog
@@ -39,11 +42,16 @@ const EditModal = ({ openEditModal, setOpenEditModal, title }) => {
         onClose={() => {
           setOpenEditModal(false)
         }}
+        fullWidth={hasDateTimeType}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-        <DialogContent>
+        <DialogContent
+          sx={{
+            position: 'relative'
+          }}
+        >
           <ModalFormContent
             formContent={actionForm}
             handleChangeForm={handleChangeForm}

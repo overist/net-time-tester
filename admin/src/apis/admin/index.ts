@@ -19,38 +19,6 @@ export const createSystemAdmin = (params: object) => {
   return response
 }
 
-// ANCHOR login
-export const login = (params: object) => {
-  const url = `${rootUrl}login`
-  const response = axios.post<CommonResponse>(url, params)
-
-  return response
-}
-
-// ANCHOR logout
-export const logout = () => {
-  const url = `${rootUrl}logout`
-  const response = axios.delete<CommonResponse>(url)
-
-  return response
-}
-
-// ANCHOR get admin by session
-export const getAdminBySession = () => {
-  const url = `${rootUrl}getAdminBySession`
-  const response = axios.get<CommonResponse>(url)
-
-  return response
-}
-
-// ANCHOR update password
-export const updatePassword = (params: object) => {
-  const url = `${rootUrl}updatePassword`
-  const response = axios.put<CommonResponse>(url, params)
-
-  return response
-}
-
 // ANCHOR get admin list
 export const getAdminList = (params: object) => {
   const url = `${rootUrl}getAdminList`
@@ -59,9 +27,9 @@ export const getAdminList = (params: object) => {
   return response
 }
 
-// ANCHOR get admin
-export const getAdmin = (params: object) => {
-  const url = `${rootUrl}getAdmin`
+// ANCHOR get admin detail
+export const getAdminDetail = (params: object) => {
+  const url = `${rootUrl}getAdminDetail`
   const response = axios.get<CommonResponse>(url, { params })
 
   return response
@@ -99,6 +67,14 @@ export const updateAdminUsername = (params: object) => {
   return response
 }
 
+// ANCHOR update admin level
+export const updateAdminLevel = (params: object) => {
+  const url = `${rootUrl}updateAdminLevel`
+  const response = axios.put<CommonResponse>(url, params)
+
+  return response
+}
+
 // ANCHOR update admin profile
 export const updateAdminProfile = (params: object) => {
   const url = `${rootUrl}updateAdminProfile`
@@ -115,26 +91,66 @@ export const updateAdminIntro = (params: object) => {
   return response
 }
 
-// ANCHOR update admin role
-export const updateAdminRole = (params: object) => {
-  const url = `${rootUrl}updateAdminRole`
+// ANCHOR get login history admin list
+export const getLoginHistoryAdminList = (params: object) => {
+  const url = `${rootUrl}getLoginHistoryAdminList`
+  const response = axios.get<CommonResponse>(url, { params })
+
+  return response
+}
+
+// ANCHOR get user list
+export const getUserList = (params: object) => {
+  const url = `${rootUrl}getUserList`
+  const response = axios.get<CommonResponse>(url, { params })
+
+  return response
+}
+
+// ANCHOR get user detail
+export const getUserDetail = (params: object) => {
+  const url = `${rootUrl}getUserDetail`
+  const response = axios.get<CommonResponse>(url, { params })
+
+  return response
+}
+
+// ANCHOR update user detail
+export const updateUserDetail = (params: object) => {
+  const url = `${rootUrl}updateUserDetail`
   const response = axios.put<CommonResponse>(url, params)
 
   return response
 }
 
-// ANCHOR get login history list
-export const getLoginHistoryList = (params: object) => {
-  const url = `${rootUrl}getLoginHistoryList`
+// ANCHOR get login history user list
+export const getLoginHistoryUserList = (params: object) => {
+  const url = `${rootUrl}getLoginHistoryUserList`
   const response = axios.get<CommonResponse>(url, { params })
 
   return response
 }
 
-// ANCHOR get login history
-export const getLoginHistory = (params: object) => {
-  const url = `${rootUrl}getLoginHistory`
-  const response = axios.get<CommonResponse>(url, { params })
+// ANCHOR update user is ban
+export const updateUserIsBan = (params: object) => {
+  const url = `${rootUrl}updateUserIsBan`
+  const response = axios.put<CommonResponse>(url, params)
+
+  return response
+}
+
+// ANCHOR update user lock
+export const updateUserLock = (params: object) => {
+  const url = `${rootUrl}updateUserLock`
+  const response = axios.put<CommonResponse>(url, params)
+
+  return response
+}
+
+// ANCHOR delete user
+export const deleteUser = (params: object) => {
+  const url = `${rootUrl}deleteUser`
+  const response = axios.post<CommonResponse>(url, params)
 
   return response
 }

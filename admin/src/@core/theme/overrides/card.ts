@@ -9,7 +9,7 @@ const Card = (theme: Theme, skin: Skin) => {
     MuiCard: {
       styleOverrides: {
         root: {
-          // borderRadius: 8,
+          borderRadius: 0,
           ...(skin === 'bordered' && {
             border: `1px solid ${theme.palette.divider}`
           }),

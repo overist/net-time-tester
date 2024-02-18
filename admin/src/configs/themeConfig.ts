@@ -55,7 +55,7 @@ type ThemeConfig = {
 
 const themeConfig: ThemeConfig = {
   // ** Layout Configs
-  templateName: '치히로 관리자' /* App Name */,
+  templateName: 'Net Time Tester 관리자' /* App Name */,
   layout: 'vertical' /* vertical | horizontal */,
   mode: 'light' as Mode /* light | dark | semi-dark /*! Note: semi-dark value will only work for Vertical Layout */,
   direction: 'ltr' /* ltr | rtl */,
@@ -74,7 +74,7 @@ const themeConfig: ThemeConfig = {
     'accordion' /* accordion | collapse /*! Note: This is for Vertical navigation menu only */,
   navCollapsed:
     false /* true | false /*! Note: This is for Vertical navigation menu only */,
-  navigationSize: 180 /* Number in px(Pixels) /*! Note: This is for Vertical navigation menu only */,
+  navigationSize: 200 /* Number in px(Pixels) /*! Note: This is for Vertical navigation menu only */,
   collapsedNavigationSize: 84 /* Number in px(Pixels) /*! Note: This is for Vertical navigation menu only */,
   afterVerticalNavMenuContentPosition: 'fixed' /* fixed | static */,
   beforeVerticalNavMenuContentPosition: 'fixed' /* fixed | static */,

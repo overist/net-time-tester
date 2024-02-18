@@ -9,8 +9,7 @@ const withTM = require('next-transpile-modules')([
   '@fullcalendar/react',
   '@fullcalendar/daygrid',
   '@fullcalendar/list',
-  '@fullcalendar/timegrid',
-  'react-syntax-highlighter'
+  '@fullcalendar/timegrid'
 ])
 
 module.exports = withTM({
@@ -31,7 +30,7 @@ module.exports = withTM({
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:9001/api/:path*'
+        destination: 'http://localhost:9000/api/:path*'
       }
     ]
   }
